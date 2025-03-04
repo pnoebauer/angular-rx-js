@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { interval } from 'rxjs';
+import { interval, map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     const subscription = interval(1000)
-      .pipe()
+      .pipe(
+        map((value) => value * 2),
+      )
       .subscribe({
         next: (value) => {
           console.log(value);
@@ -21,5 +23,9 @@ export class AppComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  onClick(event: PointerEvent): void {
+    console.log('button clicked', event);
   }
 }
