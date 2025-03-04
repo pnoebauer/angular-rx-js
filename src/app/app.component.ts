@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { interval, map } from 'rxjs';
 
 @Component({
@@ -8,24 +15,32 @@ import { interval, map } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  clickCount = signal(0);
 
-  ngOnInit(): void {
-    const subscription = interval(1000)
-      .pipe(
-        map((value) => value * 2),
-      )
-      .subscribe({
-        next: (value) => {
-          console.log(value);
-        },
-      });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
+  constructor() {
+    effect(() => {
+      console.log('this.clickCount', this.clickCount());
     });
   }
 
-  onClick(event: PointerEvent): void {
+  ngOnInit(): void {
+    // const subscription = interval(1000)
+    //   .pipe(
+    //     map((value) => value * 2),
+    //   )
+    //   .subscribe({
+    //     next: (value) => {
+    //       console.log(value);
+    //     },
+    //   });
+    // this.destroyRef.onDestroy(() => {
+    //   subscription.unsubscribe();
+    // });
+  }
+
+  onClick(event: MouseEvent): void {
     console.log('button clicked', event);
+    this.clickCount.update((value) => value + 1);
+    console.log('this.clickCount', this.clickCount());
   }
 }
