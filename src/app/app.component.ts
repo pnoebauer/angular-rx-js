@@ -8,13 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { interval, map } from 'rxjs';
+import { interval, map, Observable, Subscriber } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
-  imports: [AsyncPipe]
+  imports: [AsyncPipe],
 })
 export class AppComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
@@ -23,6 +23,13 @@ export class AppComponent implements OnInit {
 
   interval$ = interval(1000);
   intervalSignal = toSignal(this.interval$);
+
+  customInterval$ = new Observable((subscriber) => {
+    setInterval(() => {
+      console.log('Emitting new value...');
+      subscriber.next({ message: 'New value' });
+    }, 1000);
+  });
 
   constructor() {
     effect(() => {
@@ -42,9 +49,13 @@ export class AppComponent implements OnInit {
     //       console.log(value);
     //     },
     //   });
-    // this.destroyRef.onDestroy(() => {
-    //   subscription.unsubscribe();
-    // });
+
+    const subscription = this.customInterval$.subscribe({
+      next: (val) => console.log(val),
+    });
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   onClick(event: MouseEvent): void {
