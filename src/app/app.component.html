@@ -6,5 +6,10 @@
   <button (click)="onClick($event)">Click</button>
 </p>
 <p> 
+  Signal clicks: 
   {{clickCount() }}
+</p>
+<p>
+  Observable clicks: 
+  {{clickCount$ | async }}
 </p>
